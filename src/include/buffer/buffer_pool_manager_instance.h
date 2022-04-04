@@ -59,6 +59,8 @@ class BufferPoolManagerInstance : public BufferPoolManager {
   Page *GetPages() { return pages_; }
 
  protected:
+  bool FindPage(frame_id_t *frame_id);
+
   /**
    * Fetch the requested page from the buffer pool.
    * @param page_id id of page to be fetched
@@ -131,17 +133,17 @@ class BufferPoolManagerInstance : public BufferPoolManager {
   std::atomic<page_id_t> next_page_id_ = instance_index_;
 
   /** Array of buffer pool pages. */
-  Page *pages_;
+  Page *pages_;  //物理页
   /** Pointer to the disk manager. */
   DiskManager *disk_manager_ __attribute__((__unused__));
   /** Pointer to the log manager. */
   LogManager *log_manager_ __attribute__((__unused__));
   /** Page table for keeping track of buffer pool pages. */
-  std::unordered_map<page_id_t, frame_id_t> page_table_;
+  std::unordered_map<page_id_t, frame_id_t> page_table_;  // 物理页id -> 帧id
   /** Replacer to find unpinned pages for replacement. */
-  Replacer *replacer_;
+  Replacer *replacer_;  // LRU
   /** List of free pages. */
-  std::list<frame_id_t> free_list_;
+  std::list<frame_id_t> free_list_;  // 空闲帧id
   /** This latch protects shared data structures. We recommend updating this comment to describe what it protects. */
   std::mutex latch_;
 };
